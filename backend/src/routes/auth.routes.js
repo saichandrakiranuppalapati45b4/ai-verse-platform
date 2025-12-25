@@ -23,37 +23,39 @@ router.post('/login',
             let role = '';
             let isJury = false;
 
-            // 1. Check in USERS table (Admins) - Check by username OR email
+            // 1. Check in USERS table (Admins)
+            console.log(`[Login Debug] Attempting login for: ${username}`);
             user = await db.prepare('SELECT * FROM users WHERE username = ? OR email = ?').get(username, username);
 
             if (user) {
-                // Found in users table
+                console.log('[Login Debug] Found in USERS table');
                 if (!user.is_active) {
+                    console.log('[Login Debug] Account inactive');
                     return res.status(401).json({ error: 'Account is deactivated' });
                 }
                 role = user.role;
             } else {
+                console.log('[Login Debug] Not found in USERS table, checking JURY');
                 // 2. Check in JURY_MEMBERS table
                 user = await db.prepare('SELECT * FROM jury_members WHERE email = ?').get(username);
                 if (user) {
+                    console.log('[Login Debug] Found in JURY table');
                     isJury = true;
-                    // Jury members don't have 'role' column usually, so we assign one
                     role = 'jury';
                 }
             }
 
             if (!user) {
+                console.log('[Login Debug] User not found in any table');
                 return res.status(401).json({ error: 'Invalid credentials' });
             }
 
             // Verify password
             const passwordHash = user.password_hash;
-            if (!passwordHash) {
-                // Should not happen if data integrity is good, but just in case
-                return res.status(401).json({ error: 'Invalid credentials (no password set)' });
-            }
+            console.log(`[Login Debug] Hash exists: ${!!passwordHash}`);
 
             const isValidPassword = await bcrypt.compare(password, passwordHash);
+            console.log(`[Login Debug] Password valid: ${isValidPassword}`);
 
             if (!isValidPassword) {
                 return res.status(401).json({ error: 'Invalid credentials' });
