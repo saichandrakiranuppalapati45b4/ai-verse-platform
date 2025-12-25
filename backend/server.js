@@ -99,7 +99,7 @@ app.listen(PORT, () => {
     console.log(`\n🚀 AI Verse Backend Server Started`);
     console.log(`📍 Server running on: http://localhost:${PORT}`);
     console.log(`📊 API endpoints available at: http://localhost:${PORT}/api`);
-    console.log(`🔒 Default admin credentials: admin / Admin@123`);
+    console.log(`🔒 Default admin credentials: 24pa1a45b4@vishnu.edu.in / Sai_kiran@4845`);
     console.log(`\n✨ Ready to accept requests!\n`);
 });
 
